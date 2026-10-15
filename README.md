@@ -1,0 +1,2 @@
+# Proyecto-5-Aplicaci-n-de-control-de-gastos-personales
+El propósito del proyecto Aplicación de Control de Gastos Personales es desarrollar una herramienta tecnológica que facilite la administración y el control de las finanzas personales, permitiendo a los usuarios registrar sus ingresos y gastos, organizarlos por categorías y realizar un seguimiento de sus movimientos económicos durante cada mes.
