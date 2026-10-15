@@ -74,4 +74,4 @@ El balance mensual permitirá conocer la diferencia entre el dinero recibido y e
 
 - **Integrante 1:** Miguel Angel Inga Valencia — [GitHub](https://github.com/Miguel20utp)
 - **Integrante 2:** Laura Camila Uribe — [GitHub](URL_DEL_PERFIL)
-- **Integrante 3:** Harold Andres Ordoñes Gongora — [GitHub](URL_DEL_PERFIL)
+- **Integrante 3:** Harold Andres Ordoñez Gongora — [GitHub](URL_DEL_PERFIL)
