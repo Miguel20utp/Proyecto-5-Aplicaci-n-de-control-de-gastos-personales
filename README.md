@@ -196,3 +196,6 @@ php tests/run_tests.php
 5. **Escape XSS:** Función `e()` con `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` en todas las vistas.
 6. **Manejo Seguro de Errores:** Errores y trazas técnicas registradas en `storage/logs/app_error.log` sin exponer credenciales ni rutas internas a los usuarios.
 7. **Integridad Referencial en Base de Datos:** Claves foráneas con `ON DELETE RESTRICT` y triggers que garantizan que una categoría de gasto no pueda asignarse a un ingreso y viceversa.
+
+##Servidor Web PHP
+http://127.0.0.1:8000
