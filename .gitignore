@@ -1,0 +1,16 @@
+# Dependencias de composer
+/vendor/
+composer.phar
+
+# Archivos de entorno y logs
+.env
+/storage/logs/*.log
+/storage/reports/*
+!/storage/logs/.gitkeep
+!/storage/reports/.gitkeep
+
+# IDEs y sistemas
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
