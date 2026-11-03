@@ -35,3 +35,7 @@ Para el CRUD, aislamiento entre cuentas y filtros de movimientos ejecuta php tes
 Con PHP 8.2+, Composer y `.env` configurado para una base de datos desechable creada con `database/schema.sql`, ejecuta `php tests/dashboard.php`. La prueba crea dos usuarios y verifica los totales de ingresos/gastos/saldo, rango de fechas, totales por categoría, evolución acumulada con saldo de apertura, aislamiento entre usuarios y resultados vacíos. Borra los usuarios creados al finalizar; no la ejecutes contra una base con datos importantes.
 
 Para la interfaz, inicia `php -S 127.0.0.1:8000 -t public`, inicia sesión y abre `/`. Revisa los períodos todo el historial, mes actual, mes anterior, año actual y rango personalizado; la URL debe responder con error de validación ante fechas mal formadas o invertidas. Las gráficas usan Chart.js cargado desde CDN.
+
+## Reportes y exportaci�n
+
+Ejecuta `php tests/reports.php` contra una base de datos desechable configurada en `.env`. Comprueba filtros por fecha, tipo, categor�a y descripci�n, resumen financiero, aislamiento por usuario, CSV seguro y resultados vac�os. Con sesi�n iniciada, abre `/reportes` para revisar la interfaz y descarga.
