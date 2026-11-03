@@ -1,0 +1,1 @@
+<section class="hero-card text-center p-5"><p class="text-success fw-semibold">404</p><h1 class="h2">No encontramos esa página</h1><p class="text-secondary">Revisa la dirección o vuelve al inicio.</p><a class="btn btn-success" href="/">Ir al inicio</a></section>

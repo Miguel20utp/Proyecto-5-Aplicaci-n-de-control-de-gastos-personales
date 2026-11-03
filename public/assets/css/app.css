@@ -1,0 +1,5 @@
+:root { color-scheme: light; }
+body { min-height: 100vh; background: #f4f7f5; color: #18332b; }
+.site-nav { background: #123c31; }
+.hero-card { background: #fff; border: 1px solid #e5ece8; border-radius: 1.25rem; box-shadow: 0 1rem 3rem #18332b0d; }
+.feature-card { height: 100%; padding: 1.25rem; background: #f6faf7; border: 1px solid #e7efea; border-radius: .9rem; }
