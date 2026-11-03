@@ -1,45 +1,38 @@
-# Pruebas de autenticaci贸n y comprobaciones manuales
+# Pruebas y validaci贸n manual
 
-Con PHP 8.2+ y Composer instalados, desde la ra铆z del proyecto:
+## Requisitos para las pruebas automatizadas
 
-1. `composer install` y `composer dump-autoload`; comprueba el autoload con `php -r "require 'vendor/autoload.php'; var_dump(class_exists('App\\Services\\Router'));"`.
-2. `php -S 127.0.0.1:8000 -t public` y abre `http://127.0.0.1:8000/`; debe mostrar la plantilla de inicio.
-3. Abre `/ruta-inexistente`; debe responder con estado HTTP 404 y la vista correspondiente.
-4. Verifica la carga de `app/Views/home.php` en la respuesta y Bootstrap en el layout.
-5. Para probar excepciones, configura temporalmente una ruta con un handler que lance `RuntimeException`; el front controller debe responder HTTP 500 y mostrar el detalle solo con `APP_DEBUG=true`.
+Las pruebas de integraci贸n necesitan PHP 8.2+, Composer, `pdo_mysql` y una base MySQL desechable creada con `database/schema.sql`. Configura `.env` para apuntar a esa base. **No las ejecutes en una base con informaci贸n que quieras conservar.** Las pruebas crean usuarios y movimientos y los eliminan al terminar. Ejecuta un archivo por vez desde la ra铆z del proyecto:
 
-## Prueba automatizada del modelo
+```bash
+composer install
+php tests/authentication.php
+php tests/categories.php
+php tests/movements.php
+php tests/dashboard.php
+php tests/reports.php
+php tests/settings.php
+```
 
-Configura `.env` apuntando a una base de datos desechable creada con `database/schema.sql`, instala Composer y ejecuta `php tests/authentication.php`. La prueba crea una cuenta aleatoria, valida el hash y la contrase帽a incorrecta, y elimina la cuenta al terminar. No la ejecutes contra una base con datos importantes.
+Cada archivo prueba, respectivamente: alta y hash de contrase帽as; CRUD y aislamiento de categor铆as; CRUD, compatibilidad de categor铆a y filtros de movimientos; per铆odos, estad铆sticas y aislamiento del dashboard; filtros y res煤menes de reportes; perfil, contrase帽a, tema y utilidades CSRF.
 
-Para las operaciones de categor铆as y aislamiento entre usuarios ejecuta `php tests/categories.php` con la misma configuraci贸n de base de pruebas. Comprueba crear, consultar, editar y eliminar, bloquea el borrado cuando hay movimientos y verifica que otro usuario no pueda consultar, modificar ni eliminar una categor铆a. La prueba elimina sus usuarios y registros al terminar.
+`tests/reports.php` verifica el BOM y reproduce la regla de escape de celdas de f贸rmula en un CSV temporal. No llama al controlador ni comprueba la respuesta HTTP real de `/reportes/exportar`.
 
-## Gesti贸n de categor铆as
+Para probar la conexi贸n configurada, ejecuta `php database/check_connection.php`. El script requiere `.env`, Composer y un servidor MySQL accesible.
 
-Con sesi贸n iniciada, abre `/categorias`. Las altas, ediciones y eliminaciones usan POST con token CSRF. La aplicaci贸n solo lista y modifica categor铆as del usuario autenticado y no permite borrar una categor铆a asociada a movimientos.
+## Lista de comprobaci贸n manual en navegador
 
-## Flujos HTTP
+Inicia MySQL, configura `.env`, instala Composer y ejecuta `php -S 127.0.0.1:8000 -t public`. Prueba lo siguiente:
 
-Con el servidor de desarrollo activo, comprueba:
+1. Sin iniciar sesi贸n, abre `/` y confirma la redirecci贸n a `/login`. Abre una ruta inexistente y confirma la p谩gina 404.
+2. Registra una cuenta, cierra sesi贸n e inicia con la contrase帽a correcta. Comprueba que una contrase帽a incorrecta no permite entrar y que el cierre de sesi贸n vuelve a `/login`.
+3. Reenv铆a registro, inicio de sesi贸n, cierre de sesi贸n y un formulario CRUD sin `_csrf` o con un token modificado: deben responder 419 y no cambiar datos.
+4. Crea categor铆as de ingreso y gasto. Edita sus nombres y colores. Confirma que una categor铆a usada no se puede eliminar ni cambiar de tipo.
+5. Registra ingresos y gastos con fechas distintas. Comprueba edici贸n y eliminaci贸n, adem谩s de filtros por fecha, tipo y categor铆a.
+6. Crea una segunda cuenta y confirma que no puede ver ni cambiar categor铆as o movimientos de la primera; prueba tambi茅n un ID ajeno en una URL de edici贸n.
+7. En el dashboard, recorre historial completo, mes actual, mes anterior, a帽o actual y rango personalizado. Prueba fechas inv谩lidas e invertidas. Contrasta saldos y gr谩ficas con los movimientos ingresados.
+8. En reportes, combina filtros y compara totales y filas. Descarga el CSV y verifica que Excel/LibreOffice lo abra como UTF-8 delimitado por punto y coma. Como comprobaci贸n manual de f贸rmula, exporta una descripci贸n que empiece con `=`, `+`, `-` o `@` y confirma que se antepone un ap贸strofo.
+9. Cambia el perfil, cambia la contrase帽a usando la actual, y guarda tema claro y oscuro. Recarga y vuelve a iniciar sesi贸n para confirmar que el tema persiste.
+10. En herramientas del navegador, revisa que textos de entrada se muestren como texto y no como HTML ejecutable.
 
-1. `GET /` sin sesi贸n responde con redirecci贸n a `/login`; con sesi贸n v谩lida muestra la portada.
-2. Registra un correo v谩lido y una contrase帽a de 8 caracteres o m谩s. El usuario aparece en `usuarios` con un hash que no coincide con la contrase帽a; repetir el correo presenta un error entendible.
-3. En `POST /login`, la contrase帽a correcta redirige a `/` y la incorrecta muestra un error gen茅rico. Confirma que el ID de sesi贸n cambia al iniciar sesi贸n.
-4. Env铆a un formulario de registro o login sin `_csrf` (o con un token alterado): debe responder HTTP 419 sin cambiar datos.
-5. Cierra sesi贸n usando el bot贸n; debe volver a `/login`, y una petici贸n posterior a `/` debe redirigir a login.
-
-Para el CRUD, aislamiento entre cuentas y filtros de movimientos ejecuta php tests/movements.php con la misma configuraci贸n desechable. Comprueba registrar, consultar, editar, eliminar, filtros por fecha/categor铆a/tipo y rechazo de categor铆as ajenas o incompatibles.
-
-## Dashboard y estad铆sticas
-
-Con PHP 8.2+, Composer y `.env` configurado para una base de datos desechable creada con `database/schema.sql`, ejecuta `php tests/dashboard.php`. La prueba crea dos usuarios y verifica los totales de ingresos/gastos/saldo, rango de fechas, totales por categor铆a, evoluci贸n acumulada con saldo de apertura, aislamiento entre usuarios y resultados vac铆os. Borra los usuarios creados al finalizar; no la ejecutes contra una base con datos importantes.
-
-Para la interfaz, inicia `php -S 127.0.0.1:8000 -t public`, inicia sesi贸n y abre `/`. Revisa los per铆odos todo el historial, mes actual, mes anterior, a帽o actual y rango personalizado; la URL debe responder con error de validaci贸n ante fechas mal formadas o invertidas. Las gr谩ficas usan Chart.js cargado desde CDN.
-
-## Reportes y exportaci髇
-
-Ejecuta `php tests/reports.php` contra una base de datos desechable configurada en `.env`. Comprueba filtros por fecha, tipo, categor韆 y descripci髇, resumen financiero, aislamiento por usuario, CSV seguro y resultados vac韔s. Con sesi髇 iniciada, abre `/reportes` para revisar la interfaz y descarga.
-
-## Configuraci髇 y preferencias
-
-El esquema inicial ya incluye la tabla configuraciones con 韓dice 鷑ico por usuario y clave; no requiere migraci髇 adicional. Ejecuta php tests/settings.php contra una base desechable creada con database/schema.sql para comprobar lectura y actualizaci髇 del perfil, detecci髇 de correo duplicado, hash de contrase馻, persistencia y aislamiento de tema y validaci髇 CSRF. Las operaciones de perfil, contrase馻 y tema deben enviarse por POST con token CSRF; las contrase馻s y los formatos de correo tambi閚 se validan en el controlador.
+Las pruebas automatizadas de modelos no sustituyen estos recorridos HTTP. Para Apache/Nginx, repite las rutas con el document root configurado en `public/`.
