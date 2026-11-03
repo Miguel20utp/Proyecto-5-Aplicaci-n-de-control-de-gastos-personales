@@ -39,3 +39,7 @@ Para la interfaz, inicia `php -S 127.0.0.1:8000 -t public`, inicia sesiÃ³n y abr
 ## Reportes y exportación
 
 Ejecuta `php tests/reports.php` contra una base de datos desechable configurada en `.env`. Comprueba filtros por fecha, tipo, categoría y descripción, resumen financiero, aislamiento por usuario, CSV seguro y resultados vacíos. Con sesión iniciada, abre `/reportes` para revisar la interfaz y descarga.
+
+## Configuración y preferencias
+
+El esquema inicial ya incluye la tabla configuraciones con índice único por usuario y clave; no requiere migración adicional. Ejecuta php tests/settings.php contra una base desechable creada con database/schema.sql para comprobar lectura y actualización del perfil, detección de correo duplicado, hash de contraseña, persistencia y aislamiento de tema y validación CSRF. Las operaciones de perfil, contraseña y tema deben enviarse por POST con token CSRF; las contraseñas y los formatos de correo también se validan en el controlador.
