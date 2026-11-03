@@ -1,0 +1,1 @@
+<section class="hero-card p-4 p-md-5"><h1 class="h2">Formulario vencido</h1><p>El formulario expiró o ya no es válido. Vuelve a cargar la página e inténtalo de nuevo.</p><a class="btn btn-success" href="/login">Continuar</a></section>
