@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Config\Environment;
 use App\Controllers\AuthController;
 use App\Controllers\CategoryController;
+use App\Controllers\DashboardController;
 use App\Controllers\MovementController;
 use App\Services\Router;
 use App\Services\Session;
@@ -30,7 +31,7 @@ set_error_handler(static function (int $severity, string $message, string $file,
 });
 
 $router = new Router();
-$router->get('/', [AuthController::class, 'dashboard']);
+$router->get('/', [DashboardController::class, 'index']);
 $router->get('/register', [AuthController::class, 'registerForm']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->get('/login', [AuthController::class, 'loginForm']);
