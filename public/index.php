@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\CategoryController;
 use App\Controllers\DashboardController;
 use App\Controllers\MovementController;
+use App\Controllers\ReportController;
 use App\Services\Router;
 use App\Services\Session;
 
@@ -49,5 +50,7 @@ $router->post('/movimientos', [MovementController::class, 'store']);
 $router->get('/movimientos/editar', [MovementController::class, 'edit']);
 $router->post('/movimientos/actualizar', [MovementController::class, 'update']);
 $router->post('/movimientos/eliminar', [MovementController::class, 'delete']);
+$router->get('/reportes', [ReportController::class, 'index']);
+$router->get('/reportes/exportar', [ReportController::class, 'export']);
 Session::start();
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
