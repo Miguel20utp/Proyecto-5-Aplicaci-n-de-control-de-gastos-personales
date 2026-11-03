@@ -27,3 +27,5 @@ Con el servidor de desarrollo activo, comprueba:
 3. En `POST /login`, la contraseña correcta redirige a `/` y la incorrecta muestra un error genérico. Confirma que el ID de sesión cambia al iniciar sesión.
 4. Envía un formulario de registro o login sin `_csrf` (o con un token alterado): debe responder HTTP 419 sin cambiar datos.
 5. Cierra sesión usando el botón; debe volver a `/login`, y una petición posterior a `/` debe redirigir a login.
+
+Para el CRUD, aislamiento entre cuentas y filtros de movimientos ejecuta php tests/movements.php con la misma configuración desechable. Comprueba registrar, consultar, editar, eliminar, filtros por fecha/categoría/tipo y rechazo de categorías ajenas o incompatibles.
