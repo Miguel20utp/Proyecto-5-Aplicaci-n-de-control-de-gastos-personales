@@ -6,3 +6,10 @@ body { min-height: 100vh; background: #f4f7f5; color: #18332b; }
 .color-dot { display: inline-block; width: 1rem; height: 1rem; border-radius: 50%; vertical-align: -0.15rem; margin-right: .4rem; border: 1px solid #0002; }
 .chart-wrap { position: relative; height: 17rem; max-width: 100%; }
 .chart-wrap-wide { height: 20rem; }
+
+[data-bs-theme="dark"] { color-scheme: dark; }
+[data-bs-theme="dark"] body { background: #111916; color: #e2eee8; }
+[data-bs-theme="dark"] .hero-card { background: #1b2621; border-color: #34443b; box-shadow: 0 1rem 3rem #0004; }
+[data-bs-theme="dark"] .feature-card { background: #222f29; border-color: #3a4b41; }
+[data-bs-theme="dark"] .table { --bs-table-color: #e2eee8; --bs-table-bg: transparent; --bs-table-border-color: #3a4b41; }
+[data-bs-theme="dark"] .text-secondary, [data-bs-theme="dark"] .form-text { color: #aabbb1 !important; }
