@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 use App\Config\Environment;
-use App\Controllers\HomeController;
+use App\Controllers\AuthController;
 use App\Services\Router;
+use App\Services\Session;
 
 define('BASE_PATH', dirname(__DIR__));
 require BASE_PATH . '/vendor/autoload.php';
@@ -27,5 +28,11 @@ set_error_handler(static function (int $severity, string $message, string $file,
 });
 
 $router = new Router();
-$router->get('/', [HomeController::class, 'index']);
+$router->get('/', [AuthController::class, 'dashboard']);
+$router->get('/register', [AuthController::class, 'registerForm']);
+$router->post('/register', [AuthController::class, 'register']);
+$router->get('/login', [AuthController::class, 'loginForm']);
+$router->post('/login', [AuthController::class, 'login']);
+$router->post('/logout', [AuthController::class, 'logout']);
+Session::start();
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
