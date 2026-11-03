@@ -1,207 +1,140 @@
 # Control de Gastos Personales
 
-**Universidad Tecnológica de Pereira (UTP)**  
-**Facultad de Ingenierías — Programa de Ingeniería de Sistemas y Computación**  
-**Asignatura:** IS873 – Laboratorio de Software (Grupo 102)  
-**Proyecto:** Aplicación Web de Control de Gastos Personales  
-**Autores:**
-- Laura Camila Uribe Alzate
-- Miguel Angel Inga Valencia
-- Harold Ordoñez
+Aplicación web académica para registrar ingresos y gastos, organizarlos por categorías y consultar su evolución. El proyecto actual está implementado en PHP con arquitectura MVC y una base de datos MySQL.
 
----
+## Funcionalidades
 
-## 1. Descripción General
+- Registro, inicio y cierre de sesión.
+- Gestión de categorías propias para ingresos y gastos.
+- Registro, edición, consulta y eliminación de movimientos.
+- Dashboard con saldos, gráficas y filtros por período.
+- Reportes con filtros y descarga CSV.
+- Edición del perfil, cambio de contraseña y preferencia de tema claro u oscuro.
 
-**Control de Gastos Personales** es una solución web integral diseñada para registrar, organizar, consultar y analizar ingresos y egresos personales. El sistema calcula en tiempo real el balance financiero mensual mediante aritmética decimal exacta, provee visualizaciones interactivas de distribución de gastos por categoría, genera reportes detallados y permite la exportación en formatos universales (CSV compatible con Excel y PDF listo para impresión).
+Los datos de cada cuenta se consultan y modifican en el contexto del usuario autenticado. No se incluyen usuarios ni movimientos de demostración.
 
-La aplicación está construida con una arquitectura modular sin frameworks (Pure PHP 8.2+ con PDO), separación estricta de responsabilidades (MVC / Servicios / Modelos), alta cohesión y bajo acoplamiento, cumpliendo estándares de seguridad web (OWASP).
+## Tecnologías
 
----
+- PHP 8.2 o superior, con PDO.
+- MySQL o MariaDB compatible con el esquema incluido.
+- Composer para el autoload PSR-4 y dependencias PHP.
+- Bootstrap 5.3 y CSS propio.
+- JavaScript y Chart.js 4 (cargados desde CDN).
 
-## 2. Tecnologías Obligatorias Utilizadas
+Composer también declara `setasign/fpdf`, pero el código actual no genera archivos PDF. No hay una funcionalidad PDF disponible en la aplicación.
 
-- **Backend:** PHP 8.2+ (Probado y verificado en PHP 8.3.33).
-- **Base de Datos:** MySQL 8.0+ / MariaDB 10.4+ con motor transaccional `InnoDB`.
-- **Capa de Abstracción de Datos:** PDO (PHP Data Objects) con consultas preparadas nativas y emulación desactivada.
-- **Frontend:** HTML5 semántico, CSS3 personalizado, Bootstrap 5.3 y Bootstrap Icons.
-- **Gráficos Dinámicos:** Chart.js 4.4.
-- **Gestor de Dependencias:** Composer 2.x.
-- **Generación de Reportes PDF:** Biblioteca `setasign/fpdf` v1.9.0 (integrada vía Composer).
-- **Entorno Local Recomendado:** XAMPP para Windows.
-- **Codificación:** UTF-8 / utf8mb4 con soporte completo para el idioma español (tildes, eñes).
-- **Moneda Predeterminada:** Peso Colombiano (COP), con formato local (`$ 1.250.000,00`).
+## Requisitos
 
----
+- PHP 8.2 o superior con las extensiones `pdo_mysql`, `gd` y `zlib`. `gd` y `zlib` son requisitos de la dependencia FPDF declarada en Composer.
+- MySQL o MariaDB con InnoDB y soporte para `CHECK` (MySQL 8.0.16+ o MariaDB 10.2.1+).
+- Composer 2.
+- Servidor web compatible con PHP (Apache/Nginx configurado para PHP) o el servidor integrado de PHP para desarrollo.
+- Acceso a Internet para descargar Bootstrap y Chart.js desde CDN.
 
-## 3. Arquitectura del Proyecto
+## Instalación local
+
+Desde la terminal:
+
+1. Clona el repositorio y entra a su directorio:
+
+   ```bash
+   git clone <URL-del-repositorio>
+   cd Proyecto-5-Aplicaci-n-de-control-de-gastos-personales
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   composer install
+   ```
+
+3. Crea la base de datos e importa `database/schema.sql`. El script crea la base `control_gastos` y las tablas `usuarios`, `categorias`, `movimientos` y `configuraciones`. Puede importarse desde phpMyAdmin o con el cliente MySQL:
+
+   ```bash
+   mysql -u root -p < database/schema.sql
+   ```
+
+4. Copia `.env.example` a `.env` y configura las variables de conexión para tu entorno. Por ejemplo, para MySQL local con usuario `root` sin contraseña, completa `DB_USERNAME=root` y deja `DB_PASSWORD` vacío. No uses esos valores de ejemplo en un servidor público.
+
+   ```bash
+   # PowerShell
+   Copy-Item .env.example .env
+
+   # macOS/Linux
+   cp .env.example .env
+   ```
+
+   Configura como mínimo `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD`. `APP_DEBUG` debe ser `false` en un entorno accesible a otras personas.
+
+5. Configura Apache o Nginx para que el directorio público del sitio sea `public/`. No expongas la raíz del repositorio como document root. El archivo `public/index.php` es el front controller; el servidor debe dirigir las rutas de la aplicación a ese archivo. El servidor integrado de PHP aplica el fallback de rutas automáticamente.
+
+6. Inicia la aplicación localmente desde la raíz del repositorio:
+
+   ```bash
+   php -S 127.0.0.1:8000 -t public
+   ```
+
+   Abre <http://127.0.0.1:8000>. Registra una cuenta desde **Crear una cuenta**; no hay credenciales de demostración.
+
+Para comprobar solo la conexión de base de datos, ejecuta `php database/check_connection.php` después de configurar `.env`.
+
+## Uso
+
+- **Registro e inicio de sesión:** crea una cuenta con nombre, correo y contraseña de al menos 8 caracteres; luego inicia sesión con esos datos. El cierre de sesión se realiza desde el botón de navegación.
+- **Categorías:** crea categorías de tipo ingreso o gasto; puedes asignarles un color. Una categoría con movimientos asociados no se puede eliminar y no puede cambiar de tipo.
+- **Ingresos y gastos:** registra un movimiento con categoría del mismo tipo, valor positivo, fecha y descripción opcional. La lista permite filtrar por fechas, categoría y tipo; los movimientos propios se pueden editar y eliminar.
+- **Dashboard:** consulta ingresos, gastos, saldo y movimientos del período. El filtro ofrece historial completo, mes actual, mes anterior, año actual o rango personalizado. Las gráficas presentan comparación mensual, gastos por categoría y evolución del saldo.
+- **Reportes:** filtra movimientos por fechas, tipo, categoría y texto de descripción. La descarga exporta el resultado filtrado como CSV delimitado por punto y coma y codificado en UTF-8.
+- **Configuración:** actualiza nombre y correo, cambia la contraseña validando la contraseña actual y guarda la preferencia de tema en la base de datos para conservarla al iniciar sesión de nuevo.
+
+## Pruebas
+
+Las pruebas de integración existentes requieren Composer instalado, las extensiones PHP indicadas y una base MySQL **desechable** creada con `database/schema.sql`. Configura `.env` para esa base antes de ejecutarlas. Las pruebas insertan cuentas y movimientos y los eliminan al finalizar; no las ejecutes contra una base con datos que quieras conservar.
+
+Ejecuta cada archivo desde la raíz del proyecto:
+
+```bash
+php tests/authentication.php
+php tests/categories.php
+php tests/movements.php
+php tests/dashboard.php
+php tests/reports.php
+php tests/settings.php
+```
+
+Las pruebas cubren autenticación del modelo, CRUD y aislamiento por usuario, filtros, períodos del dashboard, cálculos, preferencias y consultas de reportes. `tests/reports.php` comprueba el escape CSV en un flujo de prueba que reproduce la regla; no hace una petición HTTP al endpoint de exportación. La guía de pruebas manuales y sus pasos están en [`tests/README.md`](tests/README.md).
+
+## Estructura del proyecto
 
 ```text
-control-gastos/
-├── app/
-│   ├── config/
-│   │   └── database.php         # Conexión Singleton PDO y cargador de variables .env
-│   ├── controllers/
-│   │   ├── AuthController.php   # Login seguro, logout, control de fuerza bruta
-│   │   ├── DashboardController.php # Métricas financieras, KPIs y datos de gráficas
-│   │   ├── TransactionController.php # CRUD de movimientos, validaciones y filtros
-│   │   ├── CategoryController.php    # Gestión y catálogo de categorías
-│   │   └── ReportController.php      # Resumen mensual y exportación de archivos
-│   ├── models/
-│   │   ├── User.php             # Modelo de usuarios y bloqueo tras intentos fallidos
-│   │   ├── Category.php         # Catálogo de categorías con integridad referencial
-│   │   ├── Period.php           # Sincronización automática de periodos (año/mes)
-│   │   └── Transaction.php      # Modelo de transacciones con filtros en BD
-│   ├── services/
-│   │   ├── FinancialCalculator.php # Cálculos matemáticos exactos (BCMath)
-│   │   ├── CsvExporter.php      # Exportador CSV con BOM UTF-8 y anti CSV Injection
-│   │   └── PdfExporter.php      # Generador de reportes PDF estructurados
-│   ├── helpers/
-│   │   ├── csrf.php             # Generación y validación de tokens anti-CSRF
-│   │   ├── validation.php       # Validador de tipos, fechas y montos positivos
-│   │   ├── format.php           # Formateo de moneda colombiana COP y fechas
-│   │   └── auth.php             # Manejo de sesiones seguras y mensajes flash
-│   └── views/
-│       ├── layouts/             # Plantillas base (header, sidebar, footer)
-│       ├── auth/                # Pantalla de login
-│       ├── dashboard/           # Panel principal con tarjetas y Chart.js
-│       ├── transactions/        # Listado paginado, creación y edición
-│       ├── categories/          # Catálogo de categorías ingresos/gastos
-│       └── reports/             # Balance mensual y tablas analíticas
-├── database/
-│   ├── schema.sql               # DDL de tablas InnoDB, claves foráneas, índices y triggers
-│   ├── seed.sql                 # Categorías oficiales predeterminadas y usuario inicial
-│   └── demo.sql                 # Transacciones de ejemplo multimes
-├── docs/
-│   ├── MANUAL_USUARIO.md        # Guía paso a paso para el usuario final
-│   ├── PANTALLAS.md             # Descripción detallada de cada pantalla
-│   └── TRAZABILIDAD.md          # Matriz de trazabilidad de requerimientos
-├── public/
-│   ├── index.php                # Front Controller y enrutador principal
-│   ├── .htaccess                # Reescribidor Apache y protección de carpetas
-│   └── assets/
-│       ├── css/style.css        # Hoja de estilos con paleta UTP profesional
-│       └── js/main.js           # Dinamismo de categorías, modales y anti-doble envío
-├── storage/
-│   ├── logs/                    # Registro controlado de excepciones
-│   └── reports/                 # Archivos temporales generados
-├── tests/
-│   └── run_tests.php            # Suite de pruebas automatizadas (18 criterios + RNF-02)
-├── .env.example                 # Plantilla de configuración
-├── .env                         # Archivo activo de configuración local
-├── composer.json                # Definición de dependencias y autoloader PSR-4
-└── README.md                    # Documentación principal del sistema
+app/
+  Config/       Carga de entorno y conexión PDO
+  Controllers/  Acciones de las rutas y validación de entradas
+  Middleware/  Reglas de acceso
+  Models/      Consultas y persistencia mediante PDO
+  Services/    Router y sesiones/CSRF
+  Views/       Pantallas y layout compartido
+database/      Esquema SQL y comprobación de conexión
+docs/          Notas de arquitectura
+public/        Front controller y recursos públicos CSS/JS
+tests/         Pruebas de integración PHP
 ```
 
----
+## Seguridad observada en el código
 
-## 4. Instalación y Puesta en Marcha con XAMPP (Windows)
+- Los modelos utilizan consultas PDO preparadas y la conexión desactiva consultas emuladas.
+- Los movimientos, categorías, perfiles, preferencias y reportes se consultan dentro del ámbito del usuario autenticado.
+- Las operaciones mutables usan POST y validan token CSRF; el cierre de sesión también exige CSRF.
+- Las contraseñas se almacenan con `password_hash()` y se comprueban con `password_verify()`. La sesión regenera su identificador al iniciar sesión y al cambiar la contraseña; sus cookies usan HttpOnly, SameSite=Lax y el indicador Secure cuando la petición usa HTTPS.
+- Las vistas escapan los valores de texto con `htmlspecialchars`. La exportación antepone un apóstrofo a celdas textuales que comienzan con caracteres de fórmula.
+- Los errores técnicos se escriben en el log de PHP; el detalle se muestra en la respuesta solo cuando `APP_DEBUG=true`. Mantén `APP_DEBUG=false` en producción.
 
-### Paso 1: Clonar o copiar el repositorio
-Ubique la carpeta del proyecto en el directorio `htdocs` de XAMPP:
-```bash
-# Ruta típica:
-C:\xampp\htdocs\control-gastos
-```
+No se observa limitación de intentos de inicio de sesión ni protección automatizada contra fuerza bruta. El CSRF depende del token aleatorio de sesión; `CSRF_SECRET_KEY` no se utiliza. HTTPS y la configuración segura del servidor deben proporcionarse en el despliegue.
 
-### Paso 2: Iniciar Servicios en XAMPP
-Abra el **XAMPP Control Panel** e inicie los módulos:
-- **Apache** (Puerto 80 o configurado)
-- **MySQL** (Puerto 3306)
+## Nota de configuración versionada
 
-### Paso 3: Crear la Base de Datos e Importar Scripts SQL
-Abra phpMyAdmin (`http://localhost/phpmyadmin`) o la consola MySQL y ejecute:
-1. Cree la base de datos e importe la estructura:
-   ```sql
-   source C:/xampp/htdocs/control-gastos/database/schema.sql;
-   ```
-2. Cargue las categorías iniciales y el usuario administrador:
-   ```sql
-   source C:/xampp/htdocs/control-gastos/database/seed.sql;
-   ```
-3. *(Opcional)* Cargue los datos de demostración multimes para pruebas visuales inmediatas:
-   ```sql
-   source C:/xampp/htdocs/control-gastos/database/demo.sql;
-   ```
+Aunque `.gitignore` contiene la regla `.env`, `.env` ya aparece en el índice actual de Git y por eso la regla no lo excluye del repositorio. Antes de publicar o compartir la rama, hay que retirar ese archivo del control de versiones conservando la copia local y revisar si contiene secretos que deban rotarse. No edites ni borres la configuración local durante la instalación.
 
-### Paso 4: Configurar el archivo `.env`
-Si el archivo `.env` no existe, copie `.env.example` como `.env`:
-```ini
-APP_NAME="Control de Gastos Personales"
-APP_ENV=local
-APP_DEBUG=true
-APP_URL="http://localhost:8000"
+## Archivos heredados
 
-DB_DRIVER=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=control_gastos
-DB_USERNAME=root
-DB_PASSWORD=
-DB_CHARSET=utf8mb4
-```
-
-### Paso 5: Instalar dependencias con Composer
-Abra una consola en la raíz del proyecto y ejecute:
-```bash
-composer install
-```
-
-### Paso 6: Ejecutar la Aplicación
-Existen dos formas estándar de ejecutar el proyecto:
-
-- **Opción A (Recomendada con servidor embebido de PHP):**
-  ```bash
-  php -S 127.0.0.1:8000 -t public
-  ```
-  Acceda en su navegador web a: `http://127.0.0.1:8000`
-
-- **Opción B (Directamente bajo Apache en XAMPP):**
-  Acceda a: `http://localhost/control-gastos/public/` o `http://localhost/control-gastos/`
-
----
-
-## 5. Credenciales de Demostración
-
-- **Correo electrónico:** `admin@utp.edu.co`
-- **Contraseña:** `Admin123*`
-
-> Las contraseñas se almacenan mediante el algoritmo `BCRYPT` mediante la función nativa `password_hash()`.
-
----
-
-## 6. Ejecución de Pruebas Automatizadas
-
-El sistema incluye una suite de pruebas automatizadas reproducibles que validan todos los criterios de aceptación y requerimientos no funcionales.
-
-Para ejecutar las pruebas en consola:
-```bash
-php tests/run_tests.php
-```
-
-### Resultados de Ejecución Verificados:
-- **19/19 Pruebas Aprobadas (100% de éxito)**.
-- **Rendimiento RNF-02:** Consulta y cálculo consolidado sobre 5.000 transacciones completado en **~8 ms** (Límite exigido: 3.000 ms).
-- **Precisión Financiera RNF-04:** Verificación de balance con datos conocidos ($2.000.000 ingresos - $750.000 gastos = $1.250.000 balance exacto al centavo).
-- **Seguridad RNF-06:** Resistencia comprobada contra inyecciones SQL, tokens CSRF válidos/inválidos, y protección contra fórmulas maliciosas en CSV.
-
----
-
-## 7. Medidas de Seguridad Implementadas
-
-1. **Consultas Preparadas con PDO:** Consultas parametrizadas en todos los modelos para erradicar el riesgo de SQL Injection.
-2. **Protección Anti-CSRF:** Tokens criptográficos aleatorios generados por sesión (`bin2hex(random_bytes(32))`), requeridos en todas las peticiones POST (crear, actualizar, eliminar).
-3. **Prevención de Inyección de Fórmulas en CSV:** Sanitización de campos que comiencen con `=`, `+`, `-`, `@` anteponiendo un apóstrofe de escape.
-4. **Protección contra Fuerza Bruta:** Bloqueo temporal automático de cuentas tras 5 intentos fallidos consecutivos durante 15 minutos.
-5. **Escape XSS:** Función `e()` con `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` en todas las vistas.
-6. **Manejo Seguro de Errores:** Errores y trazas técnicas registradas en `storage/logs/app_error.log` sin exponer credenciales ni rutas internas a los usuarios.
-7. **Integridad Referencial en Base de Datos:** Claves foráneas con `ON DELETE RESTRICT` y triggers que garantizan que una categoría de gasto no pueda asignarse a un ingreso y viceversa.
-
----
-## Servidor Web PHP
-
-http://127.0.0.1:8000
-
-## Base de datos MySQL y conexión PDO
-
-Consulta [database/README.md](database/README.md) para importar el esquema desde phpMyAdmin, configurar las variables de entorno y comprobar PDO con `php database/check_connection.php`. El archivo `.env` contiene configuración local y no debe subirse al repositorio.
+`app.py` corresponde a la implementación previa en Python/Streamlit y SQLite; la aplicación PHP no lo carga. Puede retirarse en una limpieza futura si ya no es necesario para el historial del proyecto. `iniciar_servidor.bat` intenta iniciar ejecutables desde rutas absolutas de una máquina concreta y además asume una ruta de `public/`; usa las instrucciones portables de arriba en su lugar. Ambos archivos se conservan en esta entrega.

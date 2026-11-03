@@ -33,7 +33,7 @@ final class Session
         return $_SESSION['_csrf'] ??= bin2hex(random_bytes(32));
     }
 
-    public static function verifyCsrf(?string $token): bool
+    public static function verifyCsrf(mixed $token): bool
     {
         self::start();
         return is_string($token) && isset($_SESSION['_csrf']) && hash_equals($_SESSION['_csrf'], $token);
