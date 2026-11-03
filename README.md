@@ -201,3 +201,7 @@ php tests/run_tests.php
 ## Servidor Web PHP
 
 http://127.0.0.1:8000
+
+## Base de datos MySQL y conexión PDO
+
+Consulta [database/README.md](database/README.md) para importar el esquema desde phpMyAdmin, configurar las variables de entorno y comprobar PDO con `php database/check_connection.php`. El archivo `.env` contiene configuración local y no debe subirse al repositorio.
