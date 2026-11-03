@@ -12,6 +12,12 @@ Con PHP 8.2+ y Composer instalados, desde la raíz del proyecto:
 
 Configura `.env` apuntando a una base de datos desechable creada con `database/schema.sql`, instala Composer y ejecuta `php tests/authentication.php`. La prueba crea una cuenta aleatoria, valida el hash y la contraseña incorrecta, y elimina la cuenta al terminar. No la ejecutes contra una base con datos importantes.
 
+Para las operaciones de categorías y aislamiento entre usuarios ejecuta `php tests/categories.php` con la misma configuración de base de pruebas. Comprueba crear, consultar, editar y eliminar, bloquea el borrado cuando hay movimientos y verifica que otro usuario no pueda consultar, modificar ni eliminar una categoría. La prueba elimina sus usuarios y registros al terminar.
+
+## Gestión de categorías
+
+Con sesión iniciada, abre `/categorias`. Las altas, ediciones y eliminaciones usan POST con token CSRF. La aplicación solo lista y modifica categorías del usuario autenticado y no permite borrar una categoría asociada a movimientos.
+
 ## Flujos HTTP
 
 Con el servidor de desarrollo activo, comprueba:

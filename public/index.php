@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Config\Environment;
 use App\Controllers\AuthController;
+use App\Controllers\CategoryController;
 use App\Services\Router;
 use App\Services\Session;
 
@@ -34,5 +35,11 @@ $router->post('/register', [AuthController::class, 'register']);
 $router->get('/login', [AuthController::class, 'loginForm']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);
+$router->get('/categorias', [CategoryController::class, 'index']);
+$router->get('/categorias/nueva', [CategoryController::class, 'create']);
+$router->post('/categorias', [CategoryController::class, 'store']);
+$router->get('/categorias/editar', [CategoryController::class, 'edit']);
+$router->post('/categorias/actualizar', [CategoryController::class, 'update']);
+$router->post('/categorias/eliminar', [CategoryController::class, 'delete']);
 Session::start();
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
